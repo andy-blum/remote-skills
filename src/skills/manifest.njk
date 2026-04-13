@@ -8,7 +8,7 @@ eleventyExcludeFromCollections: true
   {
     "name": {{ skill.data.name | dump | safe }},
     "description": {{ skill.data.description | dump | safe }},
-    "url": "{{ site.url }}{{ skill.url | url }}SKILL.md"
+    "url": "{{ git.rawBaseUrl }}/main/src/skills/{{ skill.data.name }}/index.md"
   }{% if not loop.last %},{% endif %}
 {%- endfor %}
 ]

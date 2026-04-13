@@ -473,6 +473,43 @@
       animation: pulse 3s ease-in-out infinite;
     }
 
+    /* ── version history ── */
+    .version-entry {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .version-entry:last-child { border-bottom: none; }
+    .version-entry__header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.75rem;
+    }
+    .version-entry__hash {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .version-entry__date {
+      color: var(--fg-dim);
+      flex-shrink: 0;
+    }
+    .version-entry__message {
+      color: var(--fg);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .version-entry__header .install-copy {
+      position: static;
+      flex-shrink: 0;
+    }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
@@ -502,7 +539,7 @@
       <p class="skill-header__desc">{{ description }}</p>
       <div class="skill-header__meta">
         {% if version %}<span class="skill-header__tag">v{{ version }}</span>{% endif %}
-        <a href="{{ page.url | url }}SKILL.md" class="skill-header__tag" style="text-decoration:none">Raw</a>
+        <a href="{{ git.rawBaseUrl }}/main/src/skills/{{ name }}/index.md" class="skill-header__tag" style="text-decoration:none">Raw</a>
       </div>
     </section>
 
@@ -521,7 +558,7 @@ description: {{ description }}
 ---
 
 Fetch and follow the instructions at:
-- **{{ site.url }}{{ page.url | url }}SKILL.md**</pre>
+- **{{ git.rawBaseUrl }}/main/src/skills/{{ name }}/index.md**</pre>
         </div>
         <p class="install-path">
           Global: <code>~/.claude/skills/{{ name }}/SKILL.md</code><br>
@@ -529,6 +566,29 @@ Fetch and follow the instructions at:
         </p>
       </div>
     </details>
+
+    {% set versions = git.skills[page.fileSlug] %}
+    {% if versions and versions.length %}
+    <details class="install-panel">
+      <summary class="install-toggle">
+        <span>Version history ({{ versions.length }})</span>
+        <span class="install-toggle__arrow">&#9662;</span>
+      </summary>
+      <div class="install-body">
+        <p>Copy a pinned install stub to lock to a specific version:</p>
+        {% for v in versions %}
+        <div class="version-entry">
+          <div class="version-entry__header">
+            <code class="version-entry__hash">{{ v.shortHash }}</code>
+            <span class="version-entry__date">{{ v.date }}</span>
+            <span class="version-entry__message">{{ v.message }}</span>
+            <button class="install-copy" onclick="copyVersion(this, '{{ v.hash }}')">Copy stub</button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </details>
+    {% endif %}
 
     <div class="content">
       {{ content | safe }}
@@ -543,6 +603,21 @@ Fetch and follow the instructions at:
     <span>Remote Skills Registry</span>
   </footer>
   <script>
+    function copyVersion(btn, hash) {
+      const name = {{ name | dump | safe }};
+      const desc = {{ description | dump | safe }};
+      const rawBase = {{ git.rawBaseUrl | dump | safe }};
+      const text = `---\nname: ${name}\ndescription: ${desc}\n---\n\nFetch and follow the instructions at:\n- **${rawBase}/${hash}/src/skills/${name}/index.md**`;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied';
+        btn.setAttribute('data-copied', '');
+        setTimeout(() => {
+          btn.textContent = 'Copy stub';
+          btn.removeAttribute('data-copied');
+        }, 2000);
+      });
+    }
+
     function copyStub(btn) {
       const text = document.getElementById('install-stub-content').textContent;
       navigator.clipboard.writeText(text).then(() => {
