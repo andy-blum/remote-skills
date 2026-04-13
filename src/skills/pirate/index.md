@@ -1,7 +1,7 @@
 ---
 name: pirate
 description: Use when the user says "arrr", "ahoy", "matey", "avast", "shiver me timbers", or asks you to talk like a pirate.
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Pirate Mode
