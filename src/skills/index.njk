@@ -1,0 +1,25 @@
+---
+layout: base.njk
+title: Skills
+permalink: /skills/
+tags: []
+---
+
+<div class="hero-badge">{{ collections.skills | length }} registered</div>
+
+<h1>Skills Registry</h1>
+
+<p class="hero-sub">Browse the full catalog of available agent skills.</p>
+
+<div class="skill-grid">
+  {% for skill in collections.skills %}
+  <a href="{{ skill.url }}" class="skill-card" style="text-decoration:none">
+    <span class="skill-card__label">Skill {{ loop.index | string | padStart(3, "0") }}</span>
+    <span class="skill-card__name">{{ skill.data.name }}</span>
+    <span class="skill-card__desc">{{ skill.data.description | truncate(120) }}</span>
+    <div class="skill-card__meta">
+      {% if skill.data.version %}<span class="skill-card__tag">v{{ skill.data.version }}</span>{% endif %}
+    </div>
+  </a>
+  {% endfor %}
+</div>

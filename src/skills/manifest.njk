@@ -1,0 +1,14 @@
+---
+permalink: /skills.json
+tags: []
+eleventyExcludeFromCollections: true
+---
+[
+{%- for skill in collections.skills %}
+  {
+    "name": {{ skill.data.name | dump | safe }},
+    "description": {{ skill.data.description | dump | safe }},
+    "url": "{{ site.url }}{{ skill.url }}SKILL.md"
+  }{% if not loop.last %},{% endif %}
+{%- endfor %}
+]

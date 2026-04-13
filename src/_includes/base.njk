@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title | default("Remote Skills") }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    :root {
+      --fg: #e8e6e1;
+      --fg-dim: #908d85;
+      --fg-bright: #fffef9;
+      --bg: #0c0c0b;
+      --bg-raised: #161614;
+      --bg-surface: #1e1e1b;
+      --accent: #a8f06a;
+      --accent-dim: #6b9e3e;
+      --accent-glow: rgba(168, 240, 106, 0.12);
+      --border: #2a2a26;
+      --border-bright: #3d3d36;
+      --mono: 'DM Mono', 'Menlo', monospace;
+      --serif: 'Instrument Serif', 'Georgia', serif;
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--mono);
+      font-weight: 400;
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: var(--fg);
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ── scan-line overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.04) 2px,
+        rgba(0,0,0,0.04) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── noise texture ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    a:hover {
+      color: var(--fg-bright);
+    }
+
+    /* ── header ── */
+    .site-header {
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: rgba(12,12,11,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    .site-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      color: var(--fg-bright);
+      font-weight: 500;
+      font-size: 0.8125rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .site-logo::before {
+      content: '';
+      display: block;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent), 0 0 20px var(--accent-glow);
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .site-nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    .site-nav a {
+      color: var(--fg-dim);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      position: relative;
+    }
+    .site-nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--accent);
+      transition: width 0.3s var(--ease-out-expo);
+    }
+    .site-nav a:hover {
+      color: var(--fg);
+    }
+    .site-nav a:hover::after {
+      width: 100%;
+    }
+
+    /* ── main ── */
+    .site-main {
+      flex: 1;
+      width: 100%;
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* ── content typography ── */
+    .content h1 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      line-height: 1.05;
+      color: var(--fg-bright);
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      animation: fadeUp 0.8s var(--ease-out-expo) both;
+    }
+
+    .content h2 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1.75rem;
+      line-height: 1.2;
+      color: var(--fg-bright);
+      margin-top: 3rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .content h3 {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-top: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .content p {
+      max-width: 38rem;
+      margin-bottom: 1.25rem;
+      color: var(--fg);
+    }
+
+    .content ul, .content ol {
+      max-width: 38rem;
+      margin-bottom: 1.25rem;
+      padding-left: 1.25rem;
+    }
+
+    .content li {
+      margin-bottom: 0.375rem;
+    }
+
+    .content li::marker {
+      color: var(--accent-dim);
+    }
+
+    .content code {
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 0.125rem 0.375rem;
+      border-radius: 3px;
+      color: var(--accent);
+    }
+
+    .content pre {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .content pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 0.8125rem;
+      color: var(--fg);
+    }
+
+    .content blockquote {
+      border-left: 2px solid var(--accent-dim);
+      padding-left: 1.25rem;
+      margin-bottom: 1.25rem;
+      color: var(--fg-dim);
+      font-style: italic;
+    }
+
+    .content hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+
+    /* ── hero area ── */
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      background: var(--accent-glow);
+      border: 1px solid rgba(168, 240, 106, 0.15);
+      padding: 0.375rem 0.875rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.6s var(--ease-out-expo) both;
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      color: var(--fg-dim);
+      max-width: 34rem;
+      line-height: 1.8;
+      animation: fadeUp 0.8s 0.15s var(--ease-out-expo) both;
+    }
+
+    /* ── grid for future skill cards ── */
+    .skill-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 2.5rem;
+      animation: fadeUp 1s 0.3s var(--ease-out-expo) both;
+    }
+
+    .skill-card {
+      background: var(--bg-raised);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: background 0.25s;
+    }
+
+    .skill-card:hover {
+      background: var(--bg-surface);
+    }
+
+    .skill-card__label {
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--fg-dim);
+    }
+
+    .skill-card__name {
+      font-family: var(--serif);
+      font-size: 1.375rem;
+      color: var(--fg-bright);
+    }
+
+    .skill-card__desc {
+      font-size: 0.8125rem;
+      color: var(--fg-dim);
+      line-height: 1.6;
+    }
+
+    .skill-card__meta {
+      margin-top: auto;
+      padding-top: 0.75rem;
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.6875rem;
+      color: var(--fg-dim);
+    }
+
+    .skill-card__tag {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0.125rem 0.5rem;
+      border-radius: 2px;
+    }
+
+    /* ── footer ── */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--fg-dim);
+    }
+
+    .site-footer__status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .site-footer__dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    /* ── animations ── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── responsive ── */
+    @media (max-width: 640px) {
+      .site-header { padding: 1rem 1.25rem; }
+      .site-main { padding: 2rem 1.25rem; }
+      .site-footer { padding: 1rem 1.25rem; flex-direction: column; gap: 0.5rem; }
+      .skill-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-logo">Remote Skills</a>
+    <nav class="site-nav">
+      <a href="/">Home</a>
+      <a href="/getting-started/">Getting Started</a>
+      <a href="/skills/">Skills</a>
+    </nav>
+  </header>
+
+  <main class="site-main">
+    <div class="content">
+      {{ content | safe }}
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <span class="site-footer__status">
+      <span class="site-footer__dot"></span>
+      Systems nominal
+    </span>
+    <span>Remote Skills Registry</span>
+  </footer>
+</body>
+</html>
