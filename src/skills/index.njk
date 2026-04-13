@@ -13,7 +13,7 @@ tags: []
 
 <div class="skill-grid">
   {% for skill in collections.skills %}
-  <a href="{{ skill.url }}" class="skill-card" style="text-decoration:none">
+  <a href="{{ skill.url | url }}" class="skill-card" style="text-decoration:none">
     <span class="skill-card__label">Skill {{ loop.index | string | padStart(3, "0") }}</span>
     <span class="skill-card__name">{{ skill.data.name }}</span>
     <span class="skill-card__desc">{{ skill.data.description | truncate(120) }}</span>

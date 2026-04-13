@@ -10,7 +10,7 @@ Remote Skills is a registry of capabilities that can be deployed to AI agents. E
 
 ## How it works
 
-1. **Browse** the [skills catalog](/skills/) to find what you need
+1. **Browse** the <a href="{{ "/skills/" | url }}">skills catalog</a> to find what you need
 2. **Read** the skill documentation to understand its capabilities
 3. **Deploy** the skill to your agent by referencing its raw URL
 
@@ -31,7 +31,7 @@ https://your-domain.com/skills/acli-jira/SKILL.md
 
 ## Skill manifest
 
-A machine-readable index of all skills is published at [`/skills.json`](/skills.json). It contains each skill's name, description, version, and raw URL:
+A machine-readable index of all skills is published at <a href="{{ "/skills.json" | url }}"><code>/skills.json</code></a>. It contains each skill's name, description, version, and raw URL:
 
 ```json
 [
